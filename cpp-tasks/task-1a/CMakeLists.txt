@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 
 # TODO: переименовать проект
-project(nsuoop-cpp-template)
+project(task-1a)
 
 # задаем имя исполняемого файла основной программы
 set(exe_name ${PROJECT_NAME})
@@ -26,27 +26,8 @@ endif()
 
 # описываем основную библиотеку, т.е. библиотеку, содержащую все cpp-файлы, кроме main.cpp
 # TODO: отредактировать список cpp-файлов
-add_library(corelib OBJECT task1.cpp task2.cpp)
+add_library(corelib OBJECT module1.cpp module2.cpp module3.cpp)
 
 # описываем исполняемый файл основной программы: это main.cpp + основная библиотека
 add_executable(${exe_name} main.cpp)
-target_link_libraries(${exe_name} corelib)
-
-# ========== все, что ниже, относится к тестированию при помощи GoogleTest ==========
-
-# скачиваем библиотеку GoogleTest
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  # Specify the commit you depend on and update it regularly.
-  URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-# описываем исполняемый файл программы для запуска тестов: это cpp-файлы тестов + основная библиотека + библиотека gtest_main
-# наш собственный main.cpp здесь не нужен, т.к. функция main реализована в gtest_main
-add_executable(${test_name} task1_test.cpp task2_test.cpp)
-target_link_libraries(${test_name} gtest_main)
-target_link_libraries(${test_name} corelib)
+target_link_libraries(${exe_name} module1.h module2.h module3.h)
