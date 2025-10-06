@@ -3,6 +3,10 @@ using namespace std;
 
 int main(int arg_count, char* arg_vec[])
 {
+    if (arg_count  < 3){
+        cerr << "open error" << endl;
+        return 1;
+    }
     string input_file_name = arg_vec[1];
     string output_file_name = arg_vec[2];
 
