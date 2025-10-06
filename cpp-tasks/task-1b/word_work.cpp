@@ -1,4 +1,5 @@
 #include "word_work.h"
+using namespace std;
 
 map<string, int> CountWordFromFile(ifstream& input)
 {

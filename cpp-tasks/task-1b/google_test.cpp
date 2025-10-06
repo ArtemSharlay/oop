@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "word_work.h"
+using namespace std;
 
 ifstream CreateStringStream(const string& content)
 {

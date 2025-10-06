@@ -1,4 +1,5 @@
 ﻿#include "word_work.h"
+using namespace std;
 
 int main(int arg_count, char* arg_vec[])
 {

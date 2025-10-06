@@ -8,10 +8,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
-map<string, int> CountWordFromFile(ifstream& input);
+std::map<std::string, int> CountWordFromFile(std::ifstream& input);
 
-void WriteCSV(ofstream& output,
-              vector<pair<string, int>> sorted_word_count,
+void WriteCSV(std::ofstream& output,
+              std::vector<std::pair<std::string, int>> sorted_word_count,
               int total_words);
