@@ -9,6 +9,7 @@
 
 #define HEIGHT 20
 #define WIDTH 40
+#define DIR_TIME 5
 
 class GameObject
 {
@@ -92,6 +93,15 @@ public:
     { }
     void HandleCollision(GameObject* other) override
     { }
+
+    void Draw(WINDOW* win) override
+    {
+        if (active) {
+            wattron(win, COLOR_PAIR(4));
+            mvwaddch(win, y, x, symbol);
+            wattroff(win, COLOR_PAIR(4));
+        }
+    }
 };
 
 class Dot : public GameObject
@@ -144,7 +154,7 @@ public:
     {
         move_counter++;
 
-        if (move_counter % 10 == 0) {
+        if (move_counter % DIR_TIME == 0) {
             ChangeDirection();
             move_counter = 0;
         }
@@ -169,6 +179,13 @@ public:
             }
             else {
                 ChangeDirection();
+            }
+        }
+
+        for (auto& obj : objects) {
+            if (this != obj.get() && CollidesWith(obj.get())) {
+                HandleCollision(obj.get());
+                obj->HandleCollision(this);
             }
         }
     }
@@ -236,13 +253,13 @@ public:
 
     void Update(std::vector<std::shared_ptr<GameObject>>& objects) override
     {
-        int test_x = x + next_dx;
-        int test_y = y + next_dy;
+        int new_x = x + next_dx;
+        int new_y = y + next_dy;
         bool can_change = true;
 
         for (auto& obj : objects) {
-            if (dynamic_cast<Wall*>(obj.get()) && obj->GetX() == test_x
-                && obj->GetY() == test_y)
+            if (dynamic_cast<Wall*>(obj.get()) && obj->GetX() == new_x
+                && obj->GetY() == new_y)
             {
                 can_change = false;
                 break;
@@ -255,11 +272,8 @@ public:
         }
 
         if (dx != 0 || dy != 0) {
-            int new_x = x + dx;
-            int new_y = y + dy;
             bool can_move = true;
-
-            for (auto& obj : objects) { 
+            for (auto& obj : objects) {
                 if (dynamic_cast<Wall*>(obj.get()) && obj->GetX() == new_x
                     && obj->GetY() == new_y)
                 {
@@ -333,6 +347,12 @@ public:
     {
         return lives > 0;
     }
+
+    void Kill()
+    {
+        lives = 0;
+        return;
+    }
 };
 
 class Game
@@ -362,7 +382,7 @@ public:
             init_pair(1, COLOR_YELLOW, COLOR_BLACK); // pacman
             init_pair(2, COLOR_RED, COLOR_BLACK); // ghost
             init_pair(3, COLOR_WHITE, COLOR_BLACK); // dot
-            init_pair(4, COLOR_CYAN, COLOR_BLACK); // wall
+            init_pair(4, COLOR_GREEN, COLOR_BLACK); // wall
         }
 
         game_win = newwin(height, width, 0, 0);
@@ -425,6 +445,8 @@ public:
         objects.push_back(std::make_shared<Ghost>(4, 13));
         objects.push_back(std::make_shared<Ghost>(15, 13));
 
+        // objects.push_back(std::make_shared<Dot>(11, 11));
+
         for (int x = 2; x < width - 2; x += 1) {
             for (int y = 2; y < height - 2; y += 1) {
                 bool occupied = false;
@@ -462,6 +484,7 @@ public:
             break;
         case 'q':
         case 'Q':
+            pacman->Kill();
             running = false;
             break;
         }
@@ -530,12 +553,20 @@ public:
             if (pacman->IsAlive()) {
                 mvwprintw(
                     info_win, 1, 2, "                                    ");
-                mvwprintw(info_win, 1, width / 2 - 6, "YOU WIN!");
+                mvwprintw(info_win,
+                          1,
+                          width / 2 - 6,
+                          "YOU WIN! score %d",
+                          pacman->GetScore());
             }
             else {
                 mvwprintw(
                     info_win, 1, 2, "                                    ");
-                mvwprintw(info_win, 1, width / 2 - 6, "GAME OVER!");
+                mvwprintw(info_win,
+                          1,
+                          width / 2 - 6,
+                          "GAME OVER! score %d",
+                          pacman->GetScore());
             }
         }
 
