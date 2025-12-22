@@ -1,0 +1,4 @@
+mix $2
+
+mute 4 10
+#lololo
