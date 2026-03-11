@@ -15,7 +15,9 @@ public class TimeLimitedInput {
      * Время ожидания ввода в секундах
      */
     private static int timeout_seconds = 10;
-    /** Поток ввода */
+    /**
+     * Поток ввода
+     */
     private InputStream input_stream;
 
     /**
@@ -33,42 +35,41 @@ public class TimeLimitedInput {
         this.input_stream = input_stream;
     }
 
-        /**
-         * Читает строку ввода с ограничением по времени.
-         * Выводится сообщение о таймере
-         * Если данных нет, ожидается их появление в течение таймаута
-         * Символы считываются по одному до символа новой строки ('\n')
-         * Если время истекло, возвращается null
-         * Метод использует неблокирующую проверку
-         * для определения наличия данных без блокировки потока.
-         * @return введенная строка без символа новой строки, или null если время истекло
-         * @throws IOException если произошла ошибка ввода/вывода
-         * @throws InterruptedException если поток был прерван во время ожидания
-         */
+    /**
+     * Читает строку ввода с ограничением по времени.
+     * Выводится сообщение о таймере
+     * Если данных нет, ожидается их появление в течение таймаута
+     * Символы считываются по одному до символа новой строки ('\n')
+     * Если время истекло, возвращается null
+     * Метод использует неблокирующую проверку
+     * для определения наличия данных без блокировки потока.
+     *
+     * @return введенная строка без символа новой строки, или null если время
+     * истекло
+     * @throws IOException          если произошла ошибка ввода/вывода
+     * @throws InterruptedException если поток был прерван во время ожидания
+     */
     public String ReadWithTimeout() throws IOException, InterruptedException {
         StringBuilder input = new StringBuilder();
         long end_time = System.currentTimeMillis() + (timeout_seconds * 1000);
         try {
-            System.out.println("timer "+timeout_seconds+" seconds");
-            if (input_stream.available() == 0) {
-                while (System.currentTimeMillis() < end_time) {
-                    if (input_stream.available() > 0) {
-                        int ch = input_stream.read();
-                        if (ch == '\n') {
-                            return input.toString();
-                        }
+            System.out.println("timer " + timeout_seconds + " seconds");
+            while (System.currentTimeMillis() < end_time) {
+                if (input_stream.available() > 0) {
+                    int ch = input_stream.read();
+                    if (ch == '\n') {
+                        return input.toString();
+                    } else if (ch != '\r') {
                         input.append((char) ch);
-                    } else {
-                        Thread.sleep(50);
                     }
+                } else {
+                    Thread.sleep(50);
                 }
-                System.out.println("\ntimeout");
-                return null;
             }
+            System.out.println("\ntimeout");
+            return null;
         } catch (Exception e) {
             throw e;
         }
-
-        return input.toString();
     }
 }
