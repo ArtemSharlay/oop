@@ -19,7 +19,7 @@ public class FileLogger {
     /**
      * Обработчик для записи в файл
      */
-    private FileHandler fileHandler;
+    private FileHandler file_handler;
 
     /**
      * Приватный конструктор
@@ -40,11 +40,11 @@ public class FileLogger {
             logger = Logger.getLogger("ApplicationLogger");
             logger.setUseParentHandlers(false);
 
-            fileHandler = new FileHandler("application.log", true);
-            fileHandler.setFormatter(new SimpleFormatter());
-            fileHandler.setLevel(Level.ALL);
+            file_handler = new FileHandler("application.log", true);
+            file_handler.setFormatter(new SimpleFormatter());
+            file_handler.setLevel(Level.ALL);
 
-            logger.addHandler(fileHandler);
+            logger.addHandler(file_handler);
             logger.setLevel(Level.ALL);
 
         } catch (IOException e) {
@@ -88,8 +88,8 @@ public class FileLogger {
      * и для продолжения логирования потребуется создать новый экземпляр
      */
     public void close() {
-        if (fileHandler != null) {
-            fileHandler.close();
+        if (file_handler != null) {
+            file_handler.close();
         }
     }
 }
